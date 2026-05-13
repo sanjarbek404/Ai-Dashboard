@@ -17,55 +17,63 @@ export function getGeminiClient(): GoogleGenAI {
 export async function parseExpensesFromText(text: string): Promise<ExpenseInput[]> {
   const client = getGeminiClient();
   
-  const response = await client.models.generateContent({
-    model: "gemini-3.1-pro-preview",
-    contents: `Translate the following text to transactions (incomes or expenses). Analyze the text in whatever language it is (e.g. Uzbek, English), and extract the data. 
+  try {
+    const response = await client.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `Translate the following text to transactions (incomes or expenses). Analyze the text in whatever language it is (e.g. Uzbek, English), and extract the data. 
 Text: "${text}"`,
-    config: {
-      systemInstruction: "You are a specialized financial assistant. Your job is to extract financial transactions (both incomes and expenses) from natural language text. Return an array of transactions. Map the category to one of the following if possible: Salary, Business, Gift, Food, Transport, Shopping, Entertainment, Bills, Health, Education, Other.",
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.OBJECT,
-          properties: {
-            description: {
-              type: Type.STRING,
-              description: "A short, concise description of the transaction in English or the original language."
+      config: {
+        systemInstruction: "You are a specialized financial assistant. Your job is to extract financial transactions (both incomes and expenses) from natural language text. Return an array of transactions. Map the category to one of the following if possible: Salary, Business, Gift, Food, Transport, Shopping, Entertainment, Bills, Health, Education, Other.",
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              description: {
+                type: Type.STRING,
+                description: "A short, concise description of the transaction in English or the original language."
+              },
+              category: {
+                type: Type.STRING,
+                description: "The category of the transaction. E.g., Salary, Food, Transport, Shopping, etc."
+              },
+              amount: {
+                type: Type.NUMBER,
+                description: "The numerical value of the transaction. Always absolute (positive) number."
+              },
+              currency: {
+                type: Type.STRING,
+                description: "The 3-letter currency code, e.g. UZS, USD, RUB. Default to UZS if not specified."
+              },
+              type: {
+                type: Type.STRING,
+                description: "'income' if money is received/earned, 'expense' if money is spent."
+              }
             },
-            category: {
-              type: Type.STRING,
-              description: "The category of the transaction. E.g., Salary, Food, Transport, Shopping, etc."
-            },
-            amount: {
-              type: Type.NUMBER,
-              description: "The numerical value of the transaction. Always absolute (positive) number."
-            },
-            currency: {
-              type: Type.STRING,
-              description: "The 3-letter currency code, e.g. UZS, USD, RUB. Default to UZS if not specified."
-            },
-            type: {
-              type: Type.STRING,
-              description: "'income' if money is received/earned, 'expense' if money is spent."
-            }
-          },
-          required: ["description", "category", "amount", "currency", "type"]
+            required: ["description", "category", "amount", "currency", "type"]
+          }
         }
       }
+    });
+
+    const responseText = response.text;
+    if (!responseText) {
+      throw new Error("No response from Gemini");
     }
-  });
 
-  const responseText = response.text;
-  if (!responseText) {
-    throw new Error("No response from Gemini");
-  }
-
-  try {
-    const data = JSON.parse(responseText.trim());
-    return data as ExpenseInput[];
-  } catch (error) {
-    console.error("Failed to parse JSON response:", responseText);
-    throw new Error("Invalid response format from Gemini");
+    try {
+      const data = JSON.parse(responseText.trim());
+      return data as ExpenseInput[];
+    } catch (error) {
+      console.error("Failed to parse JSON response:", responseText);
+      throw new Error("Invalid response format from Gemini");
+    }
+  } catch (error: any) {
+    console.error("Gemini API Error:", error);
+    if (error?.status === 429 || error?.message?.includes("429") || error?.message?.includes("Quota")) {
+      throw new Error("Gemini API so'rovlar limitiga yetdi. Iltimos birozdan so'ng (taxminan 1 daqiqa) qayta urinib ko'ring yoki pullik (Billing) rejaga o'ting.");
+    }
+    throw new Error(error?.message || "An unexpected error occurred while analyzing the text.");
   }
 }
