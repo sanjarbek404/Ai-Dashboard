@@ -1,0 +1,6 @@
+{
+  "name": "AI Expense Analyzer",
+  "description": "An AI-powered financial assistant that analyzes expenses from natural language input.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
