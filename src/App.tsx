@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Brain, Settings2, Github } from 'lucide-react';
+import { WalletCards, Settings2, Github } from 'lucide-react';
 import { useExpenses } from './hooks/useExpenses';
 import { ExpenseForm } from './components/ExpenseForm';
 import { ExpenseChart } from './components/ExpenseChart';
@@ -30,10 +30,10 @@ export default function App() {
       <header className="h-16 px-4 md:px-8 flex items-center justify-between bg-white border-b border-slate-200 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-600/20">
-            <Brain className="w-6 h-6 text-white" />
+            <WalletCards className="w-6 h-6 text-white" />
           </div>
           <span className="text-xl font-bold tracking-tight text-slate-800">
-            Aqlli Moliya <span className="text-indigo-600">AI</span>
+            Tezkor <span className="text-indigo-600">Moliya</span>
           </span>
         </div>
         <div className="flex items-center gap-4 md:gap-6">
@@ -52,7 +52,7 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 max-w-[1400px] w-full mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 overflow-y-auto lg:overflow-hidden">
         
-        {/* Left Column: AI Interface & Recent Activity */}
+        {/* Left Column: Input Interface & Recent Activity */}
         <div className="col-span-1 lg:col-span-5 flex flex-col gap-6 lg:overflow-hidden">
           
           <ExpenseForm 
@@ -84,15 +84,14 @@ export default function App() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-tighter">Gemini API: Online</span>
+            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-tighter">LocalStorage: Active</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-tighter">LocalStorage: Active</span>
+            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-tighter">Tezkor Rejim ⚡</span>
           </div>
         </div>
         <div className="text-[10px] text-slate-400 font-medium">
-          Aqlli Moliya v1.1.0 • Sleek Layout
+          Tezkor Moliya v2.0 • Sleek Layout
         </div>
       </footer>
     </div>
